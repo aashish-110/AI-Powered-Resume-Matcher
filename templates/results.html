@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Analysis results · Resume Match{% endblock %}
+{% block content %}
+<section class="results-heading">
+  <div>
+    <div class="eyebrow">Analysis complete</div>
+    <h1>Candidate results</h1>
+    <p>{{ results|length }} resume{% if results|length != 1 %}s{% endif %} processed</p>
+  </div>
+  <a class="secondary-button" href="{{ url_for('index') }}">← Analyze more</a>
+</section>
+
+<section class="results-list">
+{% for item in results %}
+  {% if item.error %}
+  <article class="result-card error-card">
+    <div><span class="file-name">{{ item.filename }}</span><h2>Could not analyze this resume</h2></div>
+    <p>{{ item.error }}</p>
+  </article>
+  {% else %}
+  <article class="result-card">
+    <div class="candidate-top">
+      <div>
+        <span class="file-name">{{ item.filename }}</span>
+        <h2>{{ item.match.candidate_name or item.resume.name or 'Unnamed candidate' }}</h2>
+        <div class="contact-line">
+          {% if item.resume.email %}<span>{{ item.resume.email }}</span>{% endif %}
+          {% if item.resume.phone %}<span>{{ item.resume.phone }}</span>{% endif %}
+          {% if item.resume.total_exp is not none %}<span>{{ item.resume.total_exp }} years experience</span>{% endif %}
+        </div>
+      </div>
+      <div class="score" style="--score: {{ item.match.score }}">
+        <strong>{{ item.match.score|round|int }}%</strong><span>match</span>
+      </div>
+    </div>
+
+    <div class="result-grid">
+      <section>
+        <h3><span class="positive-dot"></span>Matching skills</h3>
+        <div class="tags positive">
+          {% for skill in item.match.matching_skills %}<span>{{ skill }}</span>{% else %}<em>None identified</em>{% endfor %}
+        </div>
+      </section>
+      <section>
+        <h3><span class="warning-dot"></span>Missing required skills</h3>
+        <div class="tags warning">
+          {% for skill in item.match.missing_important_skills %}<span>{{ skill }}</span>{% else %}<em>All required skills are matched</em>{% endfor %}
+        </div>
+      </section>
+    </div>
+
+    {% if item.match.score < 100 %}
+    <section class="why-score">
+      <h3>Why the score is {{ item.match.score|round|int }}%</h3>
+      <ul>
+        {% for reason in item.match.score_reasons %}
+        <li>{{ reason }}</li>
+        {% else %}
+        <li>The resume does not show full evidence for every main requirement.</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <div class="verdict">
+      <p>{{ item.match.verdict }}</p>
+    </div>
+
+    <details>
+      <summary>View extracted resume details</summary>
+      <div class="details-grid">
+        {% for title, values in [('Skills', item.resume.skills), ('Experience', item.resume.experience), ('Education', item.resume.education), ('Projects', item.resume.projects), ('Certifications', item.resume.certifications)] %}
+        <section><h3>{{ title }}</h3>{% if values %}<ul>{% for value in values %}<li>{{ value }}</li>{% endfor %}</ul>{% else %}<p>Not provided</p>{% endif %}</section>
+        {% endfor %}
+      </div>
+    </details>
+  </article>
+  {% endif %}
+{% endfor %}
+</section>
+{% endblock %}

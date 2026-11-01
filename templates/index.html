@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Upload resumes · Resume Match{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="eyebrow">Simple candidate screening</div>
+  <h1>Find the strongest match,<br><span>without reading every resume.</span></h1>
+  <p>Upload PDF or DOCX resumes. The app extracts each candidate’s details and presents a clear match report for the Associate AI Engineer position.</p>
+</section>
+
+<details class="requirements-card">
+  <summary>
+    <span>
+      <small>Before you upload</small>
+      <strong>Check what is required for this role</strong>
+    </span>
+    <span class="requirements-action">View requirements <b>+</b></span>
+  </summary>
+  <div class="requirements-content">
+    <section>
+      <span class="requirement-number">01</span>
+      <h2>Required skills</h2>
+      <ul>
+        <li>Strong Python, OOP and data structures</li>
+        <li>REST APIs using FastAPI or Flask</li>
+        <li>LLMs, prompt engineering, embeddings and RAG</li>
+        <li>SQL and relational databases</li>
+        <li>Git version control</li>
+      </ul>
+    </section>
+    <section>
+      <span class="requirement-number">02</span>
+      <h2>Education & experience</h2>
+      <ul>
+        <li>Bachelor’s degree in CS, AI, IT or a related field</li>
+        <li>0–1 year of practical experience</li>
+        <li>Academic projects, internships and open-source work are accepted</li>
+      </ul>
+    </section>
+    <section>
+      <span class="requirement-number">03</span>
+      <h2>Good to have</h2>
+      <ul>
+        <li>LangChain, LlamaIndex or Groq/OpenAI APIs</li>
+        <li>Docker and containerization</li>
+        <li>Qdrant, Pinecone or ChromaDB</li>
+        <li>AWS/GCP and CI/CD basics</li>
+      </ul>
+    </section>
+  </div>
+  <p class="requirements-note">You do not need every preferred skill to apply. The resume analysis will show both your strengths and the areas you can improve.</p>
+</details>
+
+<section class="upload-card">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data" id="upload-form">
+    <label class="drop-zone" id="drop-zone" for="resumes">
+      <span class="upload-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+      </span>
+      <strong>Drop resumes here</strong>
+      <span>or click to browse your files</span>
+      <small>PDF or DOCX · Up to 10 MB total</small>
+      <input type="file" id="resumes" name="resumes" accept=".pdf,.docx" multiple required>
+    </label>
+    <div class="file-list" id="file-list" aria-live="polite"></div>
+    <button class="primary-button" type="submit" id="submit-button">
+      <span>Analyze resumes</span><span aria-hidden="true">→</span>
+    </button>
+  </form>
+</section>
+
+<section class="steps" aria-label="How it works">
+  <div><span>01</span><strong>Upload</strong><p>Select one or more resumes.</p></div>
+  <div><span>02</span><strong>Analyze</strong><p>AI compares experience and skills.</p></div>
+  <div><span>03</span><strong>Review</strong><p>Get a clean, readable report.</p></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

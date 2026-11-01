@@ -1,7 +1,7 @@
 {
   "builds": [
     {
-      "src": "parser.py",
+      "src": "index.py",
       "use": "@vercel/python"
     }
   ],
